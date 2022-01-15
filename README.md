@@ -2,6 +2,9 @@
 
 Clásico juego de memorización.
 
+
+https://memorama-deploy-rr.netlify.app/
+
 ## Project setup
 ```
 npm install
