@@ -1,10 +1,14 @@
 <template>
 	<div>
-		<div class="shadow-xl hover:bg-green-400 transition duration-200 hover:border-green-500 cursor-default select-none bg-indigo-600 px-1 rounded h-24 md:h-32 lg:h-48  border-b border-indigo-500 border-b-4 pb-3 ">
+		<div class="shadow-xl  transition duration-200  cursor-default select-none px-1 rounded h-24 md:h-32 lg:h-48 border-b  border-b-4 pb-3"
+		:class="{ 
+			'bg-violet-600 hover:bg-green-400 border-violet-500 hover:border-green-500':!flipped,
+			'bg-green-500 border-green-400 border-b border-green-700 ':flipped
+			}">
 			<transition name="flip">
 			<div v-show='flipped'>
 				<h1 class="object-cover text-xs md:text-bold md:text-xl text-white capitalize ">{{ title }}</h1>
-				<img class="mt-1 object-cover border-2 border-blue-500 h-14 md:h-24 lg:h-32 w-full rounded-full " :src=imgSrc>
+				<img class="mt-1 object-cover border-2 border-green-600 h-14 md:h-24 lg:h-32 w-full rounded-full " :src=imgSrc>
 			</div>
 			</transition>
 			<transition name="opacity">

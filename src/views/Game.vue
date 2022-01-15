@@ -39,7 +39,7 @@
 					</button>
 				</div>
 				<div
-					class="text-sm md:text-2xl bg-pink-200 shadow-md border-4 border-pink-300 font-sans p-3 rounded-md m-2"
+					class="text-md font-semibold md:text-2xl bg-pink-200 shadow-md border-4 border-pink-300 font-sans p-3 rounded-md m-2"
 				>
 					<span class="px-10 text-green-800"
 						>Aciertos: {{ gameState.score.corrects }}
@@ -147,7 +147,7 @@ export default {
 				fruits.slice(0, amountCards.value).map((fruit) => {
 					deckCards.value.push({
 						name: fruit,
-						url: `/public/fruits/${fruit}.jpg`,
+						url: `fruits/${fruit}.jpg`,
 						flipped: false,
 						flippable: true,
 					})
@@ -208,7 +208,7 @@ export default {
 
 		const playSound = (sound) => {
 			if (sound) {
-				var audio = new Audio(`/public/sounds/${sound}`)
+				var audio = new Audio(`/sounds/${sound}`)
 				audio.play()
 			}
 		}

@@ -38,7 +38,7 @@ export default {
 		const router = useRouter();
 		const playGame = () => router.push("/game");
 		const playMusic = () => {
-			var audio = new Audio("public/sounds/music.mp3");
+			var audio = new Audio("sounds/music.mp3");
 			audio.play();
 			removeEventListener("click", playMusic);
 		};
