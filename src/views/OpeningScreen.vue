@@ -1,7 +1,7 @@
 <template>
 <div>
 	<div
-		class="select-none cursor-default flex flex-col overflow-hidden h-screen bg-green-500 -mt-7"
+		class="select-none cursor-default flex flex-col overflow-hidden h-screen bg-gradient-to-b from-pink-500 to-transparent  -mt-7"
 	>
 		<div class="flex justify-center mt-10">
 			<p
@@ -25,7 +25,7 @@
 		</div>
 	</div>
 
-	<footer class="select-none cursor-default bg-green-400 text-white bottom-0">
+	<footer class="select-none cursor-default rounded-t bg-pink-400 text-white bottom-0">
 		by hwpoison
 	</footer>
 </div>

@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="shadow-xl  transition duration-200  cursor-default select-none px-1 rounded h-24 md:h-32 lg:h-48 border-b  border-b-4 pb-3"
+		<div class="shadow-xl  transition duration-200  cursor-default select-none px-1 rounded h-24 md:h-48 border-b  border-b-4 pb-3"
 		:class="{ 
 			'bg-violet-600 hover:bg-green-400 border-violet-500 hover:border-green-500':!flipped,
 			'bg-green-500 border-green-400 border-b border-green-700 ':flipped
@@ -13,7 +13,7 @@
 			</transition>
 			<transition name="opacity">
 			<div v-show='!flipped'>
-				<h1 class="transition duration-100 pt-5 lg:pt-14 lg:text-7xl text-5xl text-white text-bold">?</h1>
+				<h1 class="transition duration-100 pt-5 pt-15 text-5xl md:pt-14 md:text-7xl text-white text-bold">?</h1>
 			</div>
 		</transition>
 		</div>
