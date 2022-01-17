@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Game from '../views/Game.vue'
-import OpeningScreen from '../views/OpeningScreen.vue'
+import MainScreen from '../views/MainScreen.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,8 +10,8 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
-    name: 'OpeningScreen',
-    component: OpeningScreen
+    name: 'MainScreen',
+    component: MainScreen
   }
 ]
 

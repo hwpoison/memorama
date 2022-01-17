@@ -1,7 +1,7 @@
 <template>
 <div>
 	<div
-		class="select-none cursor-default flex flex-col overflow-hidden h-screen bg-gradient-to-b from-pink-500 to-transparent  -mt-7"
+		class="select-none cursor-default flex flex-col overflow-hidden h-screen bg-gradient-to-b from-pink-500 to-transparent -mt-7"
 	>
 		<div class="flex justify-center mt-10">
 			<p
@@ -18,7 +18,7 @@
 		<div class="flex flex-col gap-2 mt-20">
 			<button
 				@click="playGame()"
-				class="self-center w-32 rounded py-3 text-2xl text-white text-bold bg-pink-500 border-b-4 border-pink-400 transition hover:text-3xl duration-300"
+				class="transition duration-100 self-center w-32 rounded py-3 text-2xl text-white text-bold bg-pink-500 border-b-4 border-pink-400 hover:rotate-2 hover:text-3xl duration-300 "
 			>
 				Jugar!
 			</button>
@@ -32,17 +32,23 @@
 </template>
 <script>
 import { useRouter } from "vue-router";
+import { playSound } from "../utils/sound.ts"
+import { gameSounds } from "../utils/resources.ts"
+
 export default {
-	name: "OpeningScreen",
+	name: "MainScreen",
 	setup() {
 		const router = useRouter();
+
 		const playGame = () => router.push("/game");
+
 		const playMusic = () => {
-			var audio = new Audio("sounds/music.mp3");
-			audio.play();
+			playSound(gameSounds.mainMusic, true)
 			removeEventListener("click", playMusic);
 		};
+
 		addEventListener("click", playMusic);
+
 		return {
 			playGame,
 		};

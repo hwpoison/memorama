@@ -1,5 +1,10 @@
 <template>
 	<div>
+		<GameMessage
+			:title=gameMsg.title 
+			:subtitle=gameMsg.subtitle
+			v-model:show=showGameMsg
+		/>	
 		<div
 			class="cursor-default select-none h-screen scroll-smooth pt-3 bg-pink-400 bg-gradient-to-r from-pink-500 to-transparent overflow-y-scroll pb-10"
 		>
@@ -7,11 +12,11 @@
 			<div id="panel">
 				<div class="flex justify-center gap-2 pb-0">
 					<label for="difficulty" class="text-white font-light">
-						Dificultad:</label
+						{{ gameText.gui.difficulty }}:</label
 					>
 					<select
 						id="difficulty"
-						class="w-16 md:w-24 border-2 h-6 outline-white "
+						class="w-16 md:w-24 rounded h-6 outline-white "
 						v-model="difficulty"
 					>
 						<option value=1>Ameba(1)</option>
@@ -23,39 +28,39 @@
 					</select>
 					<br />
 					<label for="amountCards" class="text-white font-light">
-						Tarjetas:</label
+						{{ gameText.gui.cards }}:</label
 					>
 					<input
 						name="amountCards"
 						type="text"
-						class="w-10 md:w-20 h-6 border-2 outline-white "
+						class="w-10 p-2 md:w-20 h-6 rounded outline-white "
 						v-model="amountCards"
 					/>
 					<button
 						@click="initNewGame()"
 						class="bg-green-400 hover:bg-green-300 hover:border-green-400 text-white text-sm font-bold rounded px-2 h-6 border-b-2 border-green-500 mb-2 transition duration-300"
 					>
-						Reiniciar
+						{{ gameText.gui.restart }}
 					</button>
 				</div>
 				<div
-					class="flex flex-wrap justify-center text-sm font-mono  md:text-2xl bg-pink-200 shadow-md border-2 border-pink-300 font-sans p-1 rounded-b-lg"
+					class="flex my-1 flex-wrap justify-center text-sm mt-2 rounded mx-1 shadow-md font-mono md:text-2xl border-2 bg-pink-300 shadow-md border-pink-300 font-bold font-sans p-1"
 				>
 					<span class="px-10 text-pink-800 "
-						>Nivel: {{ gameState.player.level }}
+						>{{ gameText.gui.level }}: {{ gameState.player.level }}
 					</span>
 					<span class="px-10 text-pink-800"
-						>Puntaje: {{ gameState.player.score }}
+						>{{ gameText.gui.score }}: {{ gameState.player.score }}
 					</span>
 				</div>
 				<div
-					class="flex flex-wrap justify-center text-sm md:text-md font-semibold md:text-2xl bg-gray-200 shadow-md border-2 font-sans p-1 mb-4 mx-4 rounded-b-lg"
+					class="flex flex-wrap justify-center text-sm md:text-md font-semibold md:text-2xl bg-pink-300 shadow-md rounded font-sans p-1 mb-4 mx-5"
 				>
 					<span class="px-10 text-green-800"
-								>Aciertos: {{ gameState.player.corrects }}
+								>{{ gameText.gui.corrects }}: {{ gameState.player.corrects }}
 					</span>
 					<span class="px-10 text-red-800"
-								>Fallos: {{ gameState.player.fails }}
+								>{{ gameText.gui.fails }}: {{ gameState.player.fails }}
 					</span>
 				</div>
 			</div>
@@ -66,6 +71,7 @@
 						:title="card.name"
 						:imgSrc="card.url"
 						:flipped="card.flipped"
+						:flippable="card.flippable"
 						@click="flipCard(id)"
 					/>
 				</div>
@@ -75,18 +81,35 @@
 </template>
 <script>
 import Card from "../components/Card.vue"
+import GameMessage from '../components/GameMessage.vue'
+
 import { ref, watch, watchEffect, reactive, onMounted } from "vue"
+import { playSound } from '../utils/sound.ts'
+import { gameSounds, gameText, getFruitsCards } from '../utils/resources.ts'
 
 export default {
 	name: "Game",
 	components: {
 		Card,
+		GameMessage
 	},
 	setup() {
-		let imageList = ref({})
 		const deckCards = ref([])
 		const difficulty = ref(2)
 		const amountCards = ref(7)
+
+		const showGameMsg = ref(false)
+
+		const gameMsg = reactive({
+			title:'', 
+			subtitle:''
+		})
+
+		const showMsg = ()=> {
+			showGameMsg.value=true
+			setTimeout(()=>{showGameMsg.value=false}, 2000)
+		}
+		//setInterval(()=>showMsg("nada"), 3000)
 
 		const gameState = reactive({
 			totalSelected: 0,
@@ -99,57 +122,43 @@ export default {
 			}
 		})
 
-		const gameSounds = {
-			winner: "winner.mp3",
-			putDeck: "put_deck.mp3",
-			flipCard: "flip_card.mp3",
-			correct: "correct_cards.mp3",
-		}
-
-		async function getImages() {
-			const response = await fetch("https://picsum.photos/v2/list")
-			return response.json()
-		}
-
-		const fruits = [
-			"sandia",
-			"manzana",
-			"pera",
-			"uva",
-			"mango",
-			"coco",
-			"banana",
-		]
-
-		const resetCounters = () => {
-			gameState.player.fails = 0
-			gameState.player.corrects = 0
-		}
-
-		const resetPlayerScore = () => {
-			gameState.player.score = 0
-			gameState.player.level = 0
-		}
-
 		// reset all game stat for a new
 		const initNewGame = () => {
+			[gameMsg.title, gameMsg.subtitle] = [gameText.ready,gameText.fullconcentration]
 			resetPlayerScore()
 			newRound()
-
 		}
 
 		// prepare for other game
 		const newRound = ()=> {
+			showMsg()
 			turnBackAll()
 			resetCounters()
 			initializeDeck()
-			shuffleCards()
+			shuffleDeck()
 			turnOverAll()
 			// show for 2 seconds
-			setTimeout(turnBackAll, 3000)
+			setTimeout(turnBackAll, 4000)
 		}
 
-		const shuffleCards = () => {
+		// generate deck
+		const initializeDeck = () => {
+			// empty the deck
+			deckCards.value = []
+			const allCards = getFruitsCards()
+			for (let i = 0; i < difficulty.value; i++) {
+				Object.keys(allCards).slice(0, amountCards.value).map((card) => {
+					deckCards.value.push({
+						name: allCards[card].name,
+						url: allCards[card].url,
+						flipped: false,
+						flippable: true,
+					})
+				})
+			}
+		}
+
+		const shuffleDeck = () => {
 			deckCards.value.sort(() => Math.random() - 0.5)
 		}
 
@@ -170,43 +179,23 @@ export default {
 			})
 		}
 
-		// generate deck
-		const initializeDeck = () => {
-			// empty the deck
-			deckCards.value = []
-			for (let i = 0; i < difficulty.value; i++) {
-				fruits.slice(0, amountCards.value).map((fruit) => {
-					deckCards.value.push({
-						name: fruit,
-						url: `fruits/${fruit}.jpg`,
-						flipped: false,
-						flippable: true,
-					})
-				})
-			}
-		}
+		const checkCardsMatch = () => {
+			const areMatch = new Set(gameState.currentSelected.map(card=>card.name)).size === 1 
 
-		const checkCards = () => {
-			const equalCards = gameState.currentSelected.reduce((n1, n2) =>
-				n1.name == n2.name ? n1 : false
-			)
-			if (equalCards) {
-				// disable equal cards
-				gameState.currentSelected.map(
-					(card) => (card.flippable = false)
-				)
-
-				gameState.player.corrects += 1
-				playSound(gameSounds.correct)
-				
-				// check winner
-				areWinner() || turnBackAll()
-
-
-			} else {
-				gameState.player.fails += 1
-				setTimeout(turnBackAll, 1000)
-				return false
+			if(areMatch){
+				if(gameState.currentSelected.length == difficulty.value){
+					gameState.currentSelected.map(
+						(card) => (card.flippable = false)
+					)
+					gameState.player.corrects += 1
+					playSound(gameSounds.correct)
+					areWinner() || turnBackAll()
+				}
+			}else{
+				if(gameState.currentSelected.length >= 2){
+					gameState.player.fails += 1
+					setTimeout(turnBackAll,1000)
+				}
 			}
 		}
 
@@ -214,6 +203,21 @@ export default {
 			if (!deckCards.value.map((card) => card.flippable).includes(true)) {
 				playSound(gameSounds.winner)
 				gameState.player.score += gameState.player.corrects**2 - (gameState.player.fails/2)
+				const perfectGame = !gameState.player.fails
+				const scoreRate = gameState.player.corrects >= gameState.player.fails
+				
+				if(perfectGame){
+					// perfect game duplicate score
+					[gameMsg.title, gameMsg.subtitle] = [gameText.perfect, gameText.whatmemory]
+					gameState.player.score += gameState.player.score
+				}else{
+					// good or bad
+					if(scoreRate)
+						[gameMsg.title, gameMsg.subtitle] = [gameText.verygood,gameText.keep]
+					else
+						[gameMsg.title, gameMsg.subtitle] = [gameText.good,gameText.maybebetter]
+				}
+
 				gameState.player.level += 1
 				newRound()
 				return true
@@ -232,29 +236,24 @@ export default {
 			card.flipped = !card.flipped
 			gameState.currentSelected.push(card)
 
-			// check cards
-			gameState.currentSelected.length == difficulty.value && checkCards()
+			// check cards match
+			checkCardsMatch()
 		}
 
-		const playSound = (sound) => {
-			if (sound) {
-				let audio = new Audio(`/sounds/${sound}`)
-				audio.play()
-			}
+		const resetCounters = () => {
+			gameState.player.fails = 0
+			gameState.player.corrects = 0
 		}
 
-		onMounted(async () => {
-			initNewGame()
-			//await getImages().then((data) => {
-				// imageList.value = data
-				// console.log(imageList.value)
-			//})
-		})
-
-		const resetScore = ()=>{
+		const resetPlayerScore = () => {
 			gameState.player.score = 0
+			gameState.player.level = 0
 		}
 
+
+		onMounted(async () => initNewGame())
+
+		// check gameplay settings changes
 		watch(()=>[difficulty.value, amountCards.value], ([],[]) => {
 			initNewGame()
 		})
@@ -265,8 +264,27 @@ export default {
 			gameState,
 			difficulty,
 			amountCards,
-			initNewGame
+			initNewGame,
+
+			showGameMsg,
+			gameMsg,
+			gameText
 		}
 	},
 }
 </script>
+<style scoped>
+.slide-fade-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(20px);
+  opacity: 0;
+}
+</style>
