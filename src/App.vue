@@ -1,4 +1,5 @@
 <template>
+  <ReloadPrompt />
   <div>
     <router-view v-slot="{ Component }">
       <transition name='slide'>
@@ -7,6 +8,14 @@
     </router-view>
   </div>
 </template>
+<script>
+import ReloadPrompt from './components/ReloadPrompt.vue'
+export default {
+  components:{
+    ReloadPrompt
+  }
+}
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

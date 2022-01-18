@@ -39,7 +39,7 @@ export default {
 	setup() {
 		const router = useRouter();
 
-		const playGame = () : Promise<void | NavigationFailure | undefined>=> router.push("/game");
+		const playGame = () : Promise<void | NavigationFailure | undefined> => router.push("/game");
 
 		const playMusic = () : void => {
 			playSound(gameSounds.mainMusic, true)
