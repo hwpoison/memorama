@@ -35,7 +35,8 @@ const gameText : any = {
 		fails:'Fallos',
 		restart:'Reiniciar',
 		difficulty:'Dificultad',
-		cards:'Tarjetas'
+		cards:'Tarjetas',
+		play:'Jugar!'
 	}
 }
 

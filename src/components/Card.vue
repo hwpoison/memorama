@@ -20,7 +20,7 @@
 		</div>
 	</div>
 </template>
-<script>
+<script lang="ts">
 export default {
 	name: 'Card',
 	props:{
@@ -40,14 +40,8 @@ export default {
 			type: Boolean,
 			default: true
 		}
-	},
-	setup(props){
-
-
-		return {}
 	}
 }
-
 </script>
 
 <style scoped>

@@ -20,7 +20,7 @@
 				@click="playGame()"
 				class="transition duration-100 self-center w-32 rounded py-3 text-2xl text-white text-bold bg-pink-500 border-b-4 border-pink-400 hover:rotate-2 hover:text-3xl duration-300 "
 			>
-				Jugar!
+				{{ gameText.gui.play }}
 			</button>
 		</div>
 	</div>
@@ -30,19 +30,18 @@
 	</footer>
 </div>
 </template>
-<script>
-import { useRouter } from "vue-router";
-import { playSound } from "../utils/sound.ts"
-import { gameSounds } from "../utils/resources.ts"
-
+<script lang="ts">
+import { useRouter, NavigationFailure } from "vue-router";
+import { playSound } from "../utils/sound"
+import { gameText, gameSounds } from "../utils/resources"
 export default {
 	name: "MainScreen",
 	setup() {
 		const router = useRouter();
 
-		const playGame = () => router.push("/game");
+		const playGame = () : Promise<void | NavigationFailure | undefined>=> router.push("/game");
 
-		const playMusic = () => {
+		const playMusic = () : void => {
 			playSound(gameSounds.mainMusic, true)
 			removeEventListener("click", playMusic);
 		};
@@ -51,6 +50,7 @@ export default {
 
 		return {
 			playGame,
+			gameText
 		};
 	},
 };
